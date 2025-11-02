@@ -2,7 +2,7 @@ const express = require('express')
 const cors = require('cors')
 const app = express();
 const port = process.env.PORT || 5000;
-const { MongoClient, ServerApiVersion } = require('mongodb');
+const { MongoClient, ServerApiVersion, ObjectId } = require('mongodb');
 require('dotenv').config()
 
 // middlewares 
@@ -34,7 +34,14 @@ async function run() {
         const cursor = jobsCollection.find();
         const result = await cursor.toArray();
         res.send(result);
-    })
+    });
+
+    app.get('/jobs/:id', async (req, res) => {
+      const id = req.params.id;
+      const query = { _id : new ObjectId(id) }
+      const result = await jobsCollection.findOne(query);
+      res.send(result);
+    });
 
     // Send a ping to confirm a successful connection
     await client.db("admin").command({ ping: 1 });
